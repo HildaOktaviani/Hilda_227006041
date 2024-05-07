@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RC4 Encryption</title>
+    <style>
+
+        body {
+            background-color: #fad6ec;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        textarea, input, button {
+            display: block;
+            margin-bottom: 10px;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        textarea {
+            min-height: 150px;
+        }
+
+        #result {
+            font-size: 18px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Enkripsi Dengan Metode RC4</h1>
+        <textarea id="message" placeholder="Silahkan masukan pesan anda..." style="background-color: #f1f1f1;"></textarea>
+        <button onclick="encrypt()">Enkripsi</button>
+        <p id="result" style="background-color: #f1f1f1; padding: 10px; border-radius: 5px;"></p> <!-- Result will be displayed here -->
+    </div>
+    <div class="footer">
+        Made by Hilda-227006041
+    </div>
+    <script>
+        // Implementasi RC4
+        var RC4 = (function() {
+            function initializeSBox(key) {
+                var S = [];
+                for (var i = 0; i < 256; i++) {
+                    S[i] = i;
+                }
+                var j = 0;
+                for (var i = 0; i < 256; i++) {
+                    j = (j + S[i] + key.charCodeAt(i % key.length)) % 256;
+                    var temp = S[i];
+                    S[i] = S[j];
+                    S[j] = temp;
+                }
+                return S;
+            }
+
+            function PRGA(S, message) {
+                var i = 0, j = 0, cipher = [];
+                for (var m = 0; m < message.length; m++) {
+                    i = (i + 1) % 256;
+                    j = (j + S[i]) % 256;
+                    var temp = S[i];
+                    S[i] = S[j];
+                    S[j] = temp;
+                    var keyIndex = (S[i] + S[j]) % 256;
+                    cipher.push(S[keyIndex] ^ message.charCodeAt(m));
+                }
+                return cipher;
+            }
+
+            function toHex(cipher) {
+                return cipher.map(function(c) {
+                    return ('0' + c.toString(16)).slice(-2);
+                }).join('');
+            }
+
+            return {
+                encrypt: function(message) {
+                    var key = "buahmangga"; // Kunci yang ditetapkan
+                    var S = initializeSBox(key);
+                    var cipher = PRGA(S, message);
+                    return toHex(cipher);
+                }
+            };
+        })();
+
+        // Fungsi untuk mengenkripsi pesan dengan RC4
+        function encrypt() {
+            var message = document.getElementById('message').value;
+            var encryptedMessage = RC4.encrypt(message);
+            document.getElementById('result').textContent = "Encrypted Result: " + encryptedMessage;
+        }
+    </script>
+</body>
+</html>
